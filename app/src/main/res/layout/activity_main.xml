@@ -9,39 +9,62 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text=" "
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/textView"/>
+        android:id="@+id/textView"
+        android:layout_marginTop="491dp"
+        app:layout_constraintHorizontal_bias="0.501" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="groupView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/groupView"
-        android:layout_marginTop="82dp" />
+        android:layout_marginTop="16dp"
+        app:layout_constraintHorizontal_bias="0.504" />
 
     <Button
         android:id="@+id/button"
         android:onClick="click"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="Testaa"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.438" />
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="368dp"
+    <Button
+        android:id="@+id/register"
+        android:onClick="registerClick"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Rekisteröidy"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.317"
+        app:layout_constraintHorizontal_bias="0.763" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextView"
+        android:layout_width="170dp"
+        android:layout_height="40dp"
+        android:hint="Syötä ryhmätunnus"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="316dp"
+        app:layout_constraintHorizontal_bias="0.074" />
+
 
 </android.support.constraint.ConstraintLayout>
