@@ -14,6 +14,8 @@ package proto.tyyppi;
         import android.widget.TextView;
         import android.widget.Toast;
 
+        import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
+
         import java.io.BufferedReader;
         import java.io.IOException;
         import java.io.InputStream;
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
         registerBtn = (Button) findViewById(R.id.register);
         testBtn = (Button) findViewById(R.id.button);
+
+        SystemRequirementsChecker.checkWithDefaultDialogs(this);
 
         SharedPreferences sharedPref= getSharedPreferences("mypref", MODE_PRIVATE);
         groupID = sharedPref.getString("savedGroup", groupID);
@@ -115,6 +119,11 @@ public class MainActivity extends AppCompatActivity {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        SystemRequirementsChecker.checkWithDefaultDialogs(this);
     }
 
     public void click(View v) {
