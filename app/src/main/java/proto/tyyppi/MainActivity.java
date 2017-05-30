@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     String[] Groups;
 
     String beaconMajor = "123456";
-    String groupID = "NotSet";
+    String groupID = "Not Set";
     String GroupString;
 
     Button registerBtn, testBtn;
