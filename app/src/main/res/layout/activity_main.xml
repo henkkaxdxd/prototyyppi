@@ -4,67 +4,138 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/app_background"
     tools:context="proto.tyyppi.MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=" "
+        android:text="© 2017 ADVANC3D Ltd."
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/textView"
-        android:layout_marginTop="491dp"
-        app:layout_constraintHorizontal_bias="0.501" />
+        android:layout_marginTop="540dp"
+        app:layout_constraintHorizontal_bias="0.1" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="groupView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/groupView"
-        android:layout_marginTop="16dp"
-        app:layout_constraintHorizontal_bias="0.504" />
+        android:text="groupView"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="150dp"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:id="@+id/groupView" />
 
     <Button
         android:id="@+id/button"
         android:onClick="click"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:text="Testaa"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.438" />
+        android:text="Testaa"
+        android:visibility="gone"
+        android:layout_marginTop="190dp"
+        app:layout_constraintHorizontal_bias="0.85" />
 
     <Button
         android:id="@+id/register"
         android:onClick="registerClick"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:text="Rekisteröidy"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.317"
-        app:layout_constraintHorizontal_bias="0.763" />
+        android:text="Aseta"
+        android:visibility="gone"
+        android:layout_marginTop="250dp"
+        app:layout_constraintHorizontal_bias="0.85" />
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextView"
         android:layout_width="170dp"
         android:layout_height="40dp"
-        android:hint="Syötä ryhmätunnus"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="316dp"
-        app:layout_constraintHorizontal_bias="0.074" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:hint="Syötä ryhmätunnus"
+        android:visibility="gone"
+        android:layout_marginTop="200dp"
+        app:layout_constraintHorizontal_bias="0.15" />
 
+    <Spinner
+        android:id="@+id/locationSpinnerView"
+        android:layout_width="170dp"
+        android:layout_height="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        android:layout_marginTop="250dp"
+        app:layout_constraintHorizontal_bias="0.15" />
+
+    <ImageView
+        android:id="@+id/cogwheelID"
+        android:onClick="cogwheelClick"
+        android:layout_width="65dp"
+        android:layout_height="62dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="15dp"
+        app:layout_constraintHorizontal_bias="0.75" />
+
+    <ImageView
+        android:id="@+id/writemessageID"
+        android:onClick="writemessageClick"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="15dp"
+        app:layout_constraintHorizontal_bias="0.25" />
+
+    <ImageView
+        android:id="@+id/homeID"
+        android:onClick="homeClick"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="15dp"
+        app:layout_constraintHorizontal_bias="0.5" />
+
+    <ImageView
+        android:id="@+id/sendmessageID"
+        android:onClick="sendmessageClick"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        android:layout_marginTop="250dp"
+        app:layout_constraintHorizontal_bias="0.9" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="349dp"
+        android:layout_height="95dp"
+        android:hint="Kirjoita viestisi tähän kenttään."
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:visibility="gone"
+        android:layout_marginTop="150dp"
+        app:layout_constraintHorizontal_bias="0.5" />
 
 </android.support.constraint.ConstraintLayout>

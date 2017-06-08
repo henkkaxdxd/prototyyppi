@@ -19,14 +19,11 @@ import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by otto on 30.5.2017.
- */
-
 public class BeaconService extends Application {
 
     private String beaconMajor = "123456";
     private String groupID = "Not Set";
+    private String locationID = "Not Set";
     private BeaconManager beaconManager;
     private String bmajori;
 
@@ -40,6 +37,7 @@ public class BeaconService extends Application {
 
         SharedPreferences sharedPref= getSharedPreferences("mypref", MODE_PRIVATE);
         groupID = sharedPref.getString("savedGroup", groupID);
+        locationID = sharedPref.getString("savedLocation", locationID);
         bmajori = sharedPref.getString("major", bmajori);
 
         beaconManager.setMonitoringListener(new BeaconManager.BeaconMonitoringListener() {
@@ -51,7 +49,7 @@ public class BeaconService extends Application {
                 // TODO: update the UI here
                 Log.d("pls", "majori: " + bmajori);
                 saveMajor("major", bmajori);
-                new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/"+bmajori+"/"+groupID);
+                new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/"+bmajori+"/"+groupID+"/"+locationID);
             }
 
             @Override

@@ -18,4 +18,22 @@
         <item>TVT16SPO</item>
         <item>TVT16SPL</item>
     </string-array>
+
+    <string-array name="location">
+        <item>Oulu</item>
+        <item>Kiiminki</item>
+        <item>Kempele</item>
+        <item>Haukipudas</item>
+        <item>Ylikiiminki</item>
+        <item>Muhos</item>
+        <item>Tyrnävä</item>
+        <item>Liminka</item>
+        <item>Pirkkala</item>
+        <item>Oulunsalo</item>
+        <item>Ii</item>
+        <item>Yli-Ii</item>
+        <item>Utajärvi</item>
+        <item>Pudasjärvi</item>
+    </string-array>
+
 </resources>

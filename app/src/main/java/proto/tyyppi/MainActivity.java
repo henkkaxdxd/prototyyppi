@@ -1,16 +1,23 @@
 package proto.tyyppi;
 
         import android.content.SharedPreferences;
+        import android.graphics.Color;
         import android.os.AsyncTask;
+        import android.os.Build;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
         import android.text.Editable;
         import android.text.TextWatcher;
         import android.view.View;
+        import android.view.Window;
+        import android.view.WindowManager;
         import android.widget.AdapterView;
         import android.widget.ArrayAdapter;
         import android.widget.AutoCompleteTextView;
         import android.widget.Button;
+        import android.widget.EditText;
+        import android.widget.ImageView;
+        import android.widget.Spinner;
         import android.widget.TextView;
         import android.widget.Toast;
 
@@ -26,40 +33,112 @@ package proto.tyyppi;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvData;
-    private TextView groupV;
+    private TextView tvData, groupV;
+
+    ImageView cogwheelView, writemessageView, sendmessageView, homeView;
 
     AutoCompleteTextView autoComp;
+
+    Spinner locationSpinner;
+
+    EditText editText;
+
     String[] Groups;
 
     String beaconMajor = "123456";
-    String groupID = "Not Set";
-    String GroupString;
+    String groupID = "Ei ryhmää";
+    String locationID = "Ei ole";
+    String GroupString, LocationString;
 
     Button registerBtn, testBtn;
+
+    int tabOpen = 2; // 1 = writeMessage, 2 = Home, 3 = Settings.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.parseColor("#ff8200"));
+            window.setNavigationBarColor(Color.parseColor("#ff8200"));
+        }
+
+        cogwheelView = (ImageView) findViewById(R.id.cogwheelID);
+        cogwheelView.setImageResource(R.drawable.settings_cogwheel);
+
+        homeView = (ImageView) findViewById(R.id.homeID);
+        homeView.setImageResource(R.drawable.home);
+
+        writemessageView = (ImageView) findViewById(R.id.writemessageID);
+        writemessageView.setImageResource(R.drawable.write_messagee);
+
+        sendmessageView = (ImageView) findViewById(R.id.sendmessageID);
+        sendmessageView.setImageResource(R.drawable.send_message);
+
         tvData = (TextView) findViewById(R.id.textView);
         groupV = (TextView) findViewById(R.id.groupView);
 
+        editText = (EditText) findViewById(R.id.editText);
+
         registerBtn = (Button) findViewById(R.id.register);
+        registerBtn.setBackgroundColor(Color.parseColor("#ff8200"));
         testBtn = (Button) findViewById(R.id.button);
+        testBtn.setBackgroundColor(Color.parseColor("#ff8200"));
 
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
 
         SharedPreferences sharedPref= getSharedPreferences("mypref", MODE_PRIVATE);
         groupID = sharedPref.getString("savedGroup", groupID);
+        locationID = sharedPref.getString("savedLocation", locationID);
 
         if (groupV == null) {
             groupV.setText("Et ole vielä missään ryhmässä. Valitse ryhmä.");
         } else {
-            groupV.setText("Olet ryhmässä: " + groupID + "\nJos haluat vaihtaa ryhmää syötä uusi ryhmätunnus.");
+            groupV.setText("Olet ryhmässä: " + groupID + "\nHavaintoasemana: " + locationID + "\n\nVoit vaihtaa näitä asetuksista.");
         }
 
+        // vv Spinner Location valintaan.
+        locationSpinner = (Spinner) findViewById(R.id.locationSpinnerView);
+
+        ArrayAdapter<String> myAdapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.location));
+        myAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        locationSpinner.setAdapter(myAdapter);
+
+        locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                LocationString = locationSpinner.getSelectedItem().toString();    // Otetaan listasta nimi
+                locationID = LocationString;                                      // Asetetaan se
+
+                groupV.setText("Olet ryhmässä: " + groupID + "\nHavaintoasemana: " + locationID + "\n\nVoit vaihtaa näitä asetuksista.");
+
+                int usersChoice = locationSpinner.getSelectedItemPosition();
+                SharedPreferences sharedPreff = getSharedPreferences("FileName",0);
+                SharedPreferences.Editor prefEditor = sharedPreff.edit();
+                prefEditor.putInt("userChoiceSpinner",usersChoice);
+                prefEditor.commit();
+
+                saveGroup("savedLocation", locationID);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        SharedPreferences sharedPreff = getSharedPreferences("FileName",MODE_PRIVATE);
+        int spinnerValue = sharedPreff.getInt("userChoiceSpinner",-1);
+        if(spinnerValue != -1)
+            // set the value of the spinner
+            locationSpinner.setSelection(spinnerValue);
+        // ^^ Spinner Location valintaan.
+
+        // vv AutoCompleteTextView ryhmän valintaan
         autoComp = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
         Groups = getResources().getStringArray(R.array.groups);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Groups);
@@ -108,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         autoComp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, "onItemClick", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "onItemClick", Toast.LENGTH_SHORT).show();
 
                 registerBtn.setVisibility(View.VISIBLE);
             }
@@ -120,20 +199,75 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
     @Override
     protected void onResume(){
         super.onResume();
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
     }
 
+    public void cogwheelClick(View v){
+        if (tabOpen == 2) {
+            groupV.setVisibility(View.GONE);
+
+            autoComp.setVisibility(View.VISIBLE);
+            locationSpinner.setVisibility(View.VISIBLE);
+        } else if (tabOpen == 1){
+            editText.setVisibility(View.GONE);
+            sendmessageView.setVisibility(View.GONE);
+
+            autoComp.setVisibility(View.VISIBLE);
+            locationSpinner.setVisibility(View.VISIBLE);
+        }
+        tabOpen = 3;
+    }
+
+    public void homeClick(View v){
+        if (tabOpen == 3) {
+            autoComp.setVisibility(View.GONE);
+            locationSpinner.setVisibility(View.GONE);
+
+            groupV.setVisibility(View.VISIBLE);
+        } else if (tabOpen == 1){
+            editText.setVisibility(View.GONE);
+            sendmessageView.setVisibility(View.GONE);
+
+            groupV.setVisibility(View.VISIBLE);
+        }
+        tabOpen = 2;
+    }
+
+    public void writemessageClick(View v){
+        if (tabOpen == 2){
+            groupV.setVisibility(View.GONE);
+
+            editText.setVisibility(View.VISIBLE);
+            sendmessageView.setVisibility(View.VISIBLE);
+        } else if (tabOpen == 3){
+            autoComp.setVisibility(View.GONE);
+            locationSpinner.setVisibility(View.GONE);
+
+            editText.setVisibility(View.VISIBLE);
+            sendmessageView.setVisibility(View.VISIBLE);
+        }
+        tabOpen = 1;
+    }
+
+    public void sendmessageClick(View v){
+        //lähetys tähän
+        editText.setText("");
+
+        Toast.makeText(MainActivity.this, "Viesti lähetetty.", Toast.LENGTH_SHORT).show();
+    }
+
     public void click(View v) {
-        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/"+beaconMajor+"/"+groupID);
+        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/"+beaconMajor+"/"+groupID+"/"+locationID);
     }
 
     public void registerClick(View v){
         GroupString = autoComp.getText().toString();    // Otetaan listasta nimi
         groupID = GroupString;                          // Asetetaan se
-        groupV.setText("Olet ryhmässä: " + groupID + "\nJos haluat vaihtaa ryhmää syötä uusi ryhmätunnus.");    // Tulostetaan se
+        groupV.setText("Olet ryhmässä: " + groupID + "\nHavaintoasemana: " + locationID + "\n\nVoit vaihtaa näitä asetuksista.");    // Tulostetaan se
 
         testBtn.setVisibility(View.VISIBLE);
         saveGroup("savedGroup", groupID);
