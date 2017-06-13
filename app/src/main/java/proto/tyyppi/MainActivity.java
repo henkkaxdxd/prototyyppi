@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         try {
-            URL url = new URL("https://oven-sausage.herokuapp.com/add/"+beaconMajor+"/"+groupID);
+            URL url = new URL("https://oven-sausage.herokuapp.com/add/1/"+beaconMajor+"/"+groupID+"/"+locationID);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -274,12 +274,12 @@ public class MainActivity extends AppCompatActivity {
         message = message.replaceAll(" ", "-");
 
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show(); // "Viesti lähetetty."
-        //new JSONtask().execute("https://oven-sausage.herokuapp.com/add/"+beaconMajor+"/"+groupID+"/"+locationID+"/"+message);
+        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+beaconMajor+"/"+groupID+"/"+locationID+"/"+message);
         editText.setText("");
     }
 
     public void click(View v) {
-        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/"+beaconMajor+"/"+groupID+"/"+locationID);
+        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+beaconMajor+"/"+groupID+"/"+locationID);
     }
 
     public void registerClick(View v){
