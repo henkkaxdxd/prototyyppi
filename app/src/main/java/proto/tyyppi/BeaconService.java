@@ -38,7 +38,7 @@ public class BeaconService extends Application {
         SharedPreferences sharedPref= getSharedPreferences("mypref", MODE_PRIVATE);
         groupID = sharedPref.getString("savedGroup", groupID);
         locationID = sharedPref.getString("savedLocation", locationID);
-        bmajori = sharedPref.getString("major", bmajori);
+        //bmajori = sharedPref.getString("major", bmajori);
 
         beaconManager.setMonitoringListener(new BeaconManager.BeaconMonitoringListener() {
             @Override
@@ -49,13 +49,14 @@ public class BeaconService extends Application {
                 // TODO: update the UI here
                 Log.d("pls", "majori: " + bmajori);
                 saveMajor("major", bmajori);
-                new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/"+bmajori+"/"+groupID+"/"+locationID);
+                new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+groupID+"/"+locationID);
             }
 
             @Override
             public void onExitedRegion(BeaconRegion region) {
-                new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/"+bmajori+"/"+null);
+                new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+null);
                 saveMajor("major",null);
+                Log.d("pls", "poistunut alueelta");
             }
         });
 

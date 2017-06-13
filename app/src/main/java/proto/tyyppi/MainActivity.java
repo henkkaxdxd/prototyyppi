@@ -8,6 +8,7 @@ package proto.tyyppi;
         import android.os.Bundle;
         import android.text.Editable;
         import android.text.TextWatcher;
+        import android.util.Log;
         import android.view.View;
         import android.view.Window;
         import android.view.WindowManager;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     String[] Groups;
 
-    String beaconMajor = "123456";
+    String bmajori = "123456";
     String groupID = "Ei ryhmää";
     String locationID = "Ei ole";
     String GroupString, LocationString;
@@ -200,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         try {
-            URL url = new URL("https://oven-sausage.herokuapp.com/add/1/"+beaconMajor+"/"+groupID+"/"+locationID);
+            URL url = new URL("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+groupID+"/"+locationID);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -270,16 +271,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendmessageClick(View v){
+        SharedPreferences sharedPref = getSharedPreferences("mypref",MODE_PRIVATE);
+        bmajori = sharedPref.getString("major", bmajori);
         message = editText.getText().toString();
         message = message.replaceAll(" ", "-");
 
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show(); // "Viesti lähetetty."
-        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+beaconMajor+"/"+groupID+"/"+locationID+"/"+message);
+        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+bmajori+"/"+groupID+"/"+locationID+"/"+message);
+        Log.d("pls", bmajori +" "+ groupID +" "+ locationID +" "+ message);
         editText.setText("");
     }
 
     public void click(View v) {
-        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+beaconMajor+"/"+groupID+"/"+locationID);
+        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+groupID+"/"+locationID);
     }
 
     public void registerClick(View v){
