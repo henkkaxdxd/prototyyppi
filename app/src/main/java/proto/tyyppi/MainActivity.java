@@ -49,8 +49,11 @@ public class MainActivity extends AppCompatActivity {
     String groupID = "Ei ryhmää";
     String locationID = "Ei ole";
     String GroupString, LocationString;
+    String message = "";
 
     Button registerBtn, testBtn;
+
+    Boolean rightGroup = false;
 
     int tabOpen = 2; // 1 = writeMessage, 2 = Home, 3 = Settings.
 
@@ -153,6 +156,8 @@ public class MainActivity extends AppCompatActivity {
                 registerBtn.setVisibility(View.GONE);
                 testBtn.setVisibility(View.GONE);
 
+                rightGroup = false;
+
                 if(!autoComp.isPerformingCompletion())
                 {
                     boolean validator=false;
@@ -190,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(MainActivity.this, "onItemClick", Toast.LENGTH_SHORT).show();
 
                 registerBtn.setVisibility(View.VISIBLE);
+                rightGroup = true;
             }
         });
 
@@ -220,12 +226,19 @@ public class MainActivity extends AppCompatActivity {
             locationSpinner.setVisibility(View.VISIBLE);
         }
         tabOpen = 3;
+
+        if (rightGroup == true){
+            registerBtn.setVisibility(View.VISIBLE);
+        }
     }
 
     public void homeClick(View v){
         if (tabOpen == 3) {
             autoComp.setVisibility(View.GONE);
             locationSpinner.setVisibility(View.GONE);
+
+            testBtn.setVisibility(View.GONE);
+            registerBtn.setVisibility(View.GONE);
 
             groupV.setVisibility(View.VISIBLE);
         } else if (tabOpen == 1){
@@ -247,6 +260,9 @@ public class MainActivity extends AppCompatActivity {
             autoComp.setVisibility(View.GONE);
             locationSpinner.setVisibility(View.GONE);
 
+            testBtn.setVisibility(View.GONE);
+            registerBtn.setVisibility(View.GONE);
+
             editText.setVisibility(View.VISIBLE);
             sendmessageView.setVisibility(View.VISIBLE);
         }
@@ -254,10 +270,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendmessageClick(View v){
-        //lähetys tähän
-        editText.setText("");
+        message = editText.getText().toString();
+        message = message.replaceAll(" ", "-");
 
-        Toast.makeText(MainActivity.this, "Viesti lähetetty.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show(); // "Viesti lähetetty."
+        //new JSONtask().execute("https://oven-sausage.herokuapp.com/add/"+beaconMajor+"/"+groupID+"/"+locationID+"/"+message);
+        editText.setText("");
     }
 
     public void click(View v) {
