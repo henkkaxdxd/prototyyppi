@@ -1,6 +1,7 @@
 package proto.tyyppi;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -21,7 +22,6 @@ import java.util.UUID;
 
 public class BeaconService extends Application {
 
-    private String beaconMajor = "123456";
     private String groupID = "Not Set";
     private String locationID = "Not Set";
     private BeaconManager beaconManager;
@@ -38,7 +38,6 @@ public class BeaconService extends Application {
         SharedPreferences sharedPref= getSharedPreferences("mypref", MODE_PRIVATE);
         groupID = sharedPref.getString("savedGroup", groupID);
         locationID = sharedPref.getString("savedLocation", locationID);
-        //bmajori = sharedPref.getString("major", bmajori);
 
         beaconManager.setMonitoringListener(new BeaconManager.BeaconMonitoringListener() {
             @Override
@@ -50,6 +49,10 @@ public class BeaconService extends Application {
                 Log.d("pls", "majori: " + bmajori);
                 saveMajor("major", bmajori);
                 new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+groupID+"/"+locationID);
+
+                Intent i = new Intent(BeaconService.this, MainActivity.class);
+                i.putExtra("myImageResource", R.drawable.beacon_on);
+                startActivity(i);
             }
 
             @Override
@@ -57,6 +60,10 @@ public class BeaconService extends Application {
                 new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+null);
                 saveMajor("major",null);
                 Log.d("pls", "poistunut alueelta");
+
+                Intent i = new Intent(BeaconService.this, MainActivity.class);
+                i.putExtra("myImageResource", R.drawable.beacon_off);
+                startActivity(i);
             }
         });
 

@@ -7,6 +7,7 @@ package proto.tyyppi;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
         import android.text.Editable;
+        import android.text.TextUtils;
         import android.text.TextWatcher;
         import android.util.Log;
         import android.view.View;
@@ -36,25 +37,27 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tvData, groupV;
 
-    ImageView cogwheelView, writemessageView, sendmessageView, homeView;
+    ImageView cogwheelView, writemessageView, sendmessageView, homeView, beaconlightView;
 
     AutoCompleteTextView autoComp;
 
     Spinner locationSpinner;
 
-    EditText editText;
+    EditText editText, name, password;
 
     String[] Groups;
 
     String bmajori = "123456";
     String groupID = "Ei ryhmää";
     String locationID = "Ei ole";
-    String GroupString, LocationString;
+    String GroupString, LocationString, triedpass, adminName;
     String message = "";
+    int pass = 22;
+    int triedpassint = 0;
 
-    Button registerBtn, testBtn;
+    Button registerBtn, testBtn, adminBtn, adminregisterBtn;
 
-    Boolean rightGroup = false;
+    Boolean rightGroup = false, adminRights = false;
 
     int tabOpen = 2; // 1 = writeMessage, 2 = Home, 3 = Settings.
 
@@ -78,19 +81,29 @@ public class MainActivity extends AppCompatActivity {
 
         writemessageView = (ImageView) findViewById(R.id.writemessageID);
         writemessageView.setImageResource(R.drawable.write_messagee);
+        writemessageView.setAlpha(123);
 
         sendmessageView = (ImageView) findViewById(R.id.sendmessageID);
         sendmessageView.setImageResource(R.drawable.send_message);
+
+        beaconlightView = (ImageView) findViewById(R.id.beaconlightID);
+        beaconlightView.setImageResource(getIntent().getIntExtra("myImageResource",R.drawable.beacon_off));
 
         tvData = (TextView) findViewById(R.id.textView);
         groupV = (TextView) findViewById(R.id.groupView);
 
         editText = (EditText) findViewById(R.id.editText);
+        name = (EditText) findViewById(R.id.name);
+        password = (EditText) findViewById(R.id.password);
 
         registerBtn = (Button) findViewById(R.id.register);
         registerBtn.setBackgroundColor(Color.parseColor("#ff8200"));
         testBtn = (Button) findViewById(R.id.button);
         testBtn.setBackgroundColor(Color.parseColor("#ff8200"));
+        adminBtn = (Button) findViewById(R.id.admin);
+        adminBtn.setBackgroundColor(Color.parseColor("#ff8200"));
+        adminregisterBtn = (Button) findViewById(R.id.adminregister);
+        adminregisterBtn.setBackgroundColor(Color.parseColor("#ff8200"));
 
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
 
@@ -214,15 +227,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void cogwheelClick(View v){
+        settings();
+    }
+
+    public void settings(){
         if (tabOpen == 2) {
             groupV.setVisibility(View.GONE);
 
+            adminBtn.setVisibility(View.VISIBLE);
             autoComp.setVisibility(View.VISIBLE);
             locationSpinner.setVisibility(View.VISIBLE);
         } else if (tabOpen == 1){
             editText.setVisibility(View.GONE);
             sendmessageView.setVisibility(View.GONE);
 
+            adminBtn.setVisibility(View.VISIBLE);
+            autoComp.setVisibility(View.VISIBLE);
+            locationSpinner.setVisibility(View.VISIBLE);
+        } else if (tabOpen > 3){
+            name.setVisibility(View.GONE);
+            password.setVisibility(View.GONE);
+            adminregisterBtn.setVisibility(View.GONE);
+
+            adminBtn.setVisibility(View.VISIBLE);
+            autoComp.setVisibility(View.VISIBLE);
+            locationSpinner.setVisibility(View.VISIBLE);
+        } else if (tabOpen == 3){
+            adminBtn.setVisibility(View.VISIBLE);
             autoComp.setVisibility(View.VISIBLE);
             locationSpinner.setVisibility(View.VISIBLE);
         }
@@ -230,6 +261,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (rightGroup == true){
             registerBtn.setVisibility(View.VISIBLE);
+        }
+
+        if (adminRights == false){
+            adminBtn.setText("Hae admin oikeudet");
+        } else if (adminRights == true){
+            adminBtn.setText("Poista admin oikeudet");
         }
     }
 
@@ -240,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
             testBtn.setVisibility(View.GONE);
             registerBtn.setVisibility(View.GONE);
+            adminBtn.setVisibility(View.GONE);
 
             groupV.setVisibility(View.VISIBLE);
         } else if (tabOpen == 1){
@@ -247,27 +285,94 @@ public class MainActivity extends AppCompatActivity {
             sendmessageView.setVisibility(View.GONE);
 
             groupV.setVisibility(View.VISIBLE);
+        } else if (tabOpen > 3){
+            name.setVisibility(View.GONE);
+            password.setVisibility(View.GONE);
+            adminregisterBtn.setVisibility(View.GONE);
+
+            groupV.setVisibility(View.VISIBLE);
         }
         tabOpen = 2;
     }
 
     public void writemessageClick(View v){
-        if (tabOpen == 2){
-            groupV.setVisibility(View.GONE);
+        if (adminRights == true) {
+            if (tabOpen == 2) {
+                groupV.setVisibility(View.GONE);
 
-            editText.setVisibility(View.VISIBLE);
-            sendmessageView.setVisibility(View.VISIBLE);
-        } else if (tabOpen == 3){
+                editText.setVisibility(View.VISIBLE);
+                sendmessageView.setVisibility(View.VISIBLE);
+            } else if (tabOpen == 3) {
+                autoComp.setVisibility(View.GONE);
+                locationSpinner.setVisibility(View.GONE);
+
+                testBtn.setVisibility(View.GONE);
+                registerBtn.setVisibility(View.GONE);
+                adminBtn.setVisibility(View.GONE);
+
+                editText.setVisibility(View.VISIBLE);
+                sendmessageView.setVisibility(View.VISIBLE);
+            } else if (tabOpen > 3) {
+                name.setVisibility(View.GONE);
+                password.setVisibility(View.GONE);
+                adminregisterBtn.setVisibility(View.GONE);
+
+                editText.setVisibility(View.VISIBLE);
+                sendmessageView.setVisibility(View.VISIBLE);
+            }
+            tabOpen = 1;
+        } else if (adminRights == false){
+            Toast.makeText(MainActivity.this, "Viestitys vaatii admin oikeudet.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void adminClick(View v){
+        tabOpen = 4;
+        if (adminRights == false) {
             autoComp.setVisibility(View.GONE);
             locationSpinner.setVisibility(View.GONE);
+            adminBtn.setVisibility(View.GONE);
 
-            testBtn.setVisibility(View.GONE);
-            registerBtn.setVisibility(View.GONE);
+            name.setVisibility(View.VISIBLE);
+            password.setVisibility(View.VISIBLE);
+            adminregisterBtn.setVisibility(View.VISIBLE);
+        } else if (adminRights == true){
+            adminRights = false;
+            Toast.makeText(MainActivity.this, "Admin oikeudet poistettu.", Toast.LENGTH_SHORT).show();
+            adminBtn.setText("Hae admin oikeudet");
+            writemessageView.setAlpha(123);
 
-            editText.setVisibility(View.VISIBLE);
-            sendmessageView.setVisibility(View.VISIBLE);
+            tabOpen = 3;
+            settings();
         }
-        tabOpen = 1;
+    }
+
+    public void adminregisterClick(View v){
+        tabOpen = 5;
+        if (name.getText().toString().equals("")){
+            Toast.makeText(MainActivity.this, "Syötä koko nimesi.", Toast.LENGTH_SHORT).show();
+        } else if (password.getText().toString().equals("")){
+            Toast.makeText(MainActivity.this, "Syötä salasana.", Toast.LENGTH_SHORT).show();
+        } else {
+            adminName = name.getText().toString();
+            triedpass = password.getText().toString();
+            triedpassint = Integer.valueOf(triedpass);
+            if (triedpassint == pass) {
+                Toast.makeText(MainActivity.this, "Oikea salasana! Admin oikeudet annettu.", Toast.LENGTH_SHORT).show();
+                writemessageView.setAlpha(255);
+                adminRights = true;
+
+                name.setVisibility(View.GONE);
+                password.setVisibility(View.GONE);
+                adminregisterBtn.setVisibility(View.GONE);
+
+                tabOpen = 3;
+                settings();
+            } else if (triedpassint != pass) {
+                Toast.makeText(MainActivity.this, "Väärä salasana!", Toast.LENGTH_SHORT).show();
+                password.setText("");
+            }
+        }
     }
 
     public void sendmessageClick(View v){
@@ -275,9 +380,11 @@ public class MainActivity extends AppCompatActivity {
         bmajori = sharedPref.getString("major", bmajori);
         message = editText.getText().toString();
         message = message.replaceAll(" ", "-");
+        adminName = adminName.replaceAll(" ", "-");
 
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show(); // "Viesti lähetetty."
         new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+bmajori+"/"+groupID+"/"+locationID+"/"+message);
+        //new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+adminName+"/"+groupID+"/"+locationID+"/"+message);
         Log.d("pls", bmajori +" "+ groupID +" "+ locationID +" "+ message);
         editText.setText("");
     }
