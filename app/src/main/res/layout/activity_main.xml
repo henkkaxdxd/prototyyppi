@@ -105,6 +105,17 @@
         android:layout_marginTop="250dp"
         app:layout_constraintHorizontal_bias="0.15" />
 
+    <Spinner
+        android:id="@+id/groupSpinnerView"
+        android:layout_width="170dp"
+        android:layout_height="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        android:layout_marginTop="260dp"
+        app:layout_constraintHorizontal_bias="0.15" />
+
     <ImageView
         android:id="@+id/cogwheelID"
         android:onClick="cogwheelClick"

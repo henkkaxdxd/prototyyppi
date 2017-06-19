@@ -19,6 +19,24 @@
         <item>TVT16SPL</item>
     </string-array>
 
+    <string-array name="sendtogroup">
+        <item>TTE3SAR</item>
+        <item>TTE3SA</item>
+        <item>TTE3SNH</item>
+        <item>TTE3SNO</item>
+        <item>TTE3SNL</item>
+        <item>TVT14SA</item>
+        <item>TVT14SNO</item>
+        <item>TVT14SNL</item>
+        <item>TVT15SMO</item>
+        <item>TVT15SPL</item>
+        <item>TVT15SPO</item>
+        <item>TVT16SMO</item>
+        <item>TVT16SE</item>
+        <item>TVT16SPO</item>
+        <item>TVT16SPL</item>
+    </string-array>
+
     <string-array name="location">
         <item>Oulu</item>
         <item>Kiiminki</item>

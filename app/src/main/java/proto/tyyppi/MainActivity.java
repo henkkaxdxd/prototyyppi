@@ -4,6 +4,7 @@ package proto.tyyppi;
         import android.graphics.Color;
         import android.os.AsyncTask;
         import android.os.Build;
+        import android.os.CountDownTimer;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
         import android.text.Editable;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     AutoCompleteTextView autoComp;
 
-    Spinner locationSpinner;
+    Spinner locationSpinner, groupSpinner;
 
     EditText editText, name, password;
 
@@ -50,8 +51,9 @@ public class MainActivity extends AppCompatActivity {
     String bmajori = "123456";
     String groupID = "Ei ryhmää";
     String locationID = "Ei ole";
-    String GroupString, LocationString, triedpass, adminName;
+    String GroupString, LocationString, triedpass, adminName, sendtoGroupString, sendtogroupID;
     String message = "";
+    String beaconLight = "off";
     int pass = 22;
     int triedpassint = 0;
 
@@ -60,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     Boolean rightGroup = false, adminRights = false;
 
     int tabOpen = 2; // 1 = writeMessage, 2 = Home, 3 = Settings.
+
+    private CountDownTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         sendmessageView.setImageResource(R.drawable.send_message);
 
         beaconlightView = (ImageView) findViewById(R.id.beaconlightID);
-        beaconlightView.setImageResource(getIntent().getIntExtra("myImageResource",R.drawable.beacon_off));
+        beaconlightView.setImageResource(R.drawable.beacon_off);
 
         tvData = (TextView) findViewById(R.id.textView);
         groupV = (TextView) findViewById(R.id.groupView);
@@ -110,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref= getSharedPreferences("mypref", MODE_PRIVATE);
         groupID = sharedPref.getString("savedGroup", groupID);
         locationID = sharedPref.getString("savedLocation", locationID);
+        beaconLight = sharedPref.getString("savedBeacon", beaconLight);
 
         if (groupV == null) {
             groupV.setText("Et ole vielä missään ryhmässä. Valitse ryhmä.");
@@ -154,6 +159,30 @@ public class MainActivity extends AppCompatActivity {
             // set the value of the spinner
             locationSpinner.setSelection(spinnerValue);
         // ^^ Spinner Location valintaan.
+
+        // vv Spinner Group valintaan (viestitys).
+        groupSpinner = (Spinner) findViewById(R.id.groupSpinnerView);
+
+        ArrayAdapter<String> myAdapter2 = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.sendtogroup));
+        myAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        groupSpinner.setAdapter(myAdapter2);
+
+        groupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sendtoGroupString = groupSpinner.getSelectedItem().toString();    // Otetaan listasta nimi
+                sendtogroupID = sendtoGroupString;
+
+                Toast.makeText(MainActivity.this, sendtogroupID, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        // ^^ Spinner Group valintaan (viestitys).
 
         // vv AutoCompleteTextView ryhmän valintaan
         autoComp = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
@@ -218,6 +247,33 @@ public class MainActivity extends AppCompatActivity {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
+        timer = new CountDownTimer(2000, 20) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+                try{
+                    yourMethod();
+                }catch(Exception e){
+                    Log.e("Error", "Error: " + e.toString());
+                }
+            }
+        }.start();
+    }
+
+    public void yourMethod(){
+        SharedPreferences sharedPref = getSharedPreferences("mypref",MODE_PRIVATE);
+        beaconLight = sharedPref.getString("savedBeacon", beaconLight);
+
+        if (beaconLight.equals("on")){
+            beaconlightView.setImageResource(R.drawable.beacon_on);
+        } else if (beaconLight.equals("off")){
+            beaconlightView.setImageResource(R.drawable.beacon_off);
+        }
+        timer.start();
     }
 
     @Override
@@ -240,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (tabOpen == 1){
             editText.setVisibility(View.GONE);
             sendmessageView.setVisibility(View.GONE);
+            groupSpinner.setVisibility(View.GONE);
 
             adminBtn.setVisibility(View.VISIBLE);
             autoComp.setVisibility(View.VISIBLE);
@@ -283,6 +340,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (tabOpen == 1){
             editText.setVisibility(View.GONE);
             sendmessageView.setVisibility(View.GONE);
+            groupSpinner.setVisibility(View.GONE);
 
             groupV.setVisibility(View.VISIBLE);
         } else if (tabOpen > 3){
@@ -302,6 +360,7 @@ public class MainActivity extends AppCompatActivity {
 
                 editText.setVisibility(View.VISIBLE);
                 sendmessageView.setVisibility(View.VISIBLE);
+                groupSpinner.setVisibility(View.VISIBLE);
             } else if (tabOpen == 3) {
                 autoComp.setVisibility(View.GONE);
                 locationSpinner.setVisibility(View.GONE);
@@ -312,6 +371,7 @@ public class MainActivity extends AppCompatActivity {
 
                 editText.setVisibility(View.VISIBLE);
                 sendmessageView.setVisibility(View.VISIBLE);
+                groupSpinner.setVisibility(View.VISIBLE);
             } else if (tabOpen > 3) {
                 name.setVisibility(View.GONE);
                 password.setVisibility(View.GONE);
@@ -319,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
 
                 editText.setVisibility(View.VISIBLE);
                 sendmessageView.setVisibility(View.VISIBLE);
+                groupSpinner.setVisibility(View.VISIBLE);
             }
             tabOpen = 1;
         } else if (adminRights == false){
@@ -356,19 +417,24 @@ public class MainActivity extends AppCompatActivity {
         } else {
             adminName = name.getText().toString();
             triedpass = password.getText().toString();
-            triedpassint = Integer.valueOf(triedpass);
-            if (triedpassint == pass) {
-                Toast.makeText(MainActivity.this, "Oikea salasana! Admin oikeudet annettu.", Toast.LENGTH_SHORT).show();
-                writemessageView.setAlpha(255);
-                adminRights = true;
+            if (android.text.TextUtils.isDigitsOnly(triedpass) == true){    // testaa että salasanassa on vain numeroita
+                triedpassint = Integer.valueOf(triedpass);                  //
+                if (triedpassint == pass) {
+                    Toast.makeText(MainActivity.this, "Oikea salasana! Admin oikeudet annettu.", Toast.LENGTH_SHORT).show();
+                    writemessageView.setAlpha(255);
+                    adminRights = true;
 
-                name.setVisibility(View.GONE);
-                password.setVisibility(View.GONE);
-                adminregisterBtn.setVisibility(View.GONE);
+                    name.setVisibility(View.GONE);
+                    password.setVisibility(View.GONE);
+                    adminregisterBtn.setVisibility(View.GONE);
 
-                tabOpen = 3;
-                settings();
-            } else if (triedpassint != pass) {
+                    tabOpen = 3;
+                    settings();
+                } else if (triedpassint != pass) {
+                    Toast.makeText(MainActivity.this, "Väärä salasana!", Toast.LENGTH_SHORT).show();
+                    password.setText("");
+                }
+            } else {
                 Toast.makeText(MainActivity.this, "Väärä salasana!", Toast.LENGTH_SHORT).show();
                 password.setText("");
             }
@@ -382,11 +448,14 @@ public class MainActivity extends AppCompatActivity {
         message = message.replaceAll(" ", "-");
         adminName = adminName.replaceAll(" ", "-");
 
-        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show(); // "Viesti lähetetty."
-        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+bmajori+"/"+groupID+"/"+locationID+"/"+message);
-        //new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+adminName+"/"+groupID+"/"+locationID+"/"+message);
-        Log.d("pls", bmajori +" "+ groupID +" "+ locationID +" "+ message);
-        editText.setText("");
+        if (message.isEmpty()){
+            Toast.makeText(MainActivity.this, "Viesti kenttäsi on tyhjä!", Toast.LENGTH_SHORT).show(); // "Viesti lähetetty."
+        } else {
+            Toast.makeText(MainActivity.this, sendtogroupID +" "+ message +" "+ adminName, Toast.LENGTH_LONG).show(); // "Viesti lähetetty."
+            //new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+bmajori+"/"+groupID+"/"+locationID+"/"+message);
+            //new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+groupID+"/"+adminName+"/"+message);
+            editText.setText("");
+        }
     }
 
     public void click(View v) {

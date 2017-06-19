@@ -1,6 +1,10 @@
 package proto.tyyppi;
 
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -24,6 +28,7 @@ public class BeaconService extends Application {
 
     private String groupID = "Not Set";
     private String locationID = "Not Set";
+    private String beaconLight = "on";
     private BeaconManager beaconManager;
     private String bmajori;
 
@@ -38,21 +43,23 @@ public class BeaconService extends Application {
         SharedPreferences sharedPref= getSharedPreferences("mypref", MODE_PRIVATE);
         groupID = sharedPref.getString("savedGroup", groupID);
         locationID = sharedPref.getString("savedLocation", locationID);
+        beaconLight = sharedPref.getString("savedBeacon", beaconLight);
 
         beaconManager.setMonitoringListener(new BeaconManager.BeaconMonitoringListener() {
             @Override
             public void onEnteredRegion(BeaconRegion region, List<Beacon> list) {
 
-                Beacon beaconM = list.get(0);;
+                Beacon beaconM = list.get(0);
                 bmajori = String.valueOf(beaconM.getMajor());
                 // TODO: update the UI here
                 Log.d("pls", "majori: " + bmajori);
                 saveMajor("major", bmajori);
                 new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+groupID+"/"+locationID);
 
-                Intent i = new Intent(BeaconService.this, MainActivity.class);
-                i.putExtra("myImageResource", R.drawable.beacon_on);
-                startActivity(i);
+                showNotification("Sup brah","(logged in)");
+
+                beaconLight = "on";
+                saveMajor("savedBeacon",beaconLight);
             }
 
             @Override
@@ -61,9 +68,10 @@ public class BeaconService extends Application {
                 saveMajor("major",null);
                 Log.d("pls", "poistunut alueelta");
 
-                Intent i = new Intent(BeaconService.this, MainActivity.class);
-                i.putExtra("myImageResource", R.drawable.beacon_off);
-                startActivity(i);
+                showNotification("Bye brah","(banned)");
+
+                beaconLight = "off";
+                saveMajor("savedBeacon",beaconLight);
             }
         });
 
@@ -75,6 +83,24 @@ public class BeaconService extends Application {
 
             }
         });
+    }
+
+    public void showNotification(String title, String message) {
+        Intent notifyIntent = new Intent(this, MainActivity.class);
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivities(this, 0,
+                new Intent[] { notifyIntent }, PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notification = new Notification.Builder(this)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .build();
+        notification.defaults |= Notification.DEFAULT_SOUND;
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(1, notification);
     }
 
     public void saveMajor(String name, String addMajor){
