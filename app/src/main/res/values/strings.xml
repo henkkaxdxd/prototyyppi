@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">prototyyppi</string>
+    <string name="app_name">Buddy</string>
 
     <string-array name="groups">
         <item>TTE3SAR</item>

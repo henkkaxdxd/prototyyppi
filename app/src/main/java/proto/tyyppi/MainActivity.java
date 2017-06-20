@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tvData, groupV;
 
-    ImageView cogwheelView, writemessageView, sendmessageView, homeView, beaconlightView;
+    ImageView cogwheelView, writemessageView, sendmessageView, homeView, beaconlightView, buddylogoView;
 
     AutoCompleteTextView autoComp;
 
@@ -91,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
 
         beaconlightView = (ImageView) findViewById(R.id.beaconlightID);
         beaconlightView.setImageResource(R.drawable.beacon_off);
+
+        buddylogoView = (ImageView) findViewById(R.id.buddylogoID);
+        buddylogoView.setImageResource(R.drawable.buddy_text);
 
         tvData = (TextView) findViewById(R.id.textView);
         groupV = (TextView) findViewById(R.id.groupView);
@@ -289,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
     public void settings(){
         if (tabOpen == 2) {
             groupV.setVisibility(View.GONE);
+            buddylogoView.setVisibility(View.GONE);
 
             adminBtn.setVisibility(View.VISIBLE);
             autoComp.setVisibility(View.VISIBLE);
@@ -336,18 +340,21 @@ public class MainActivity extends AppCompatActivity {
             adminBtn.setVisibility(View.GONE);
 
             groupV.setVisibility(View.VISIBLE);
+            buddylogoView.setVisibility(View.VISIBLE);
         } else if (tabOpen == 1){
             editText.setVisibility(View.GONE);
             sendmessageView.setVisibility(View.GONE);
             groupSpinner.setVisibility(View.GONE);
 
             groupV.setVisibility(View.VISIBLE);
+            buddylogoView.setVisibility(View.VISIBLE);
         } else if (tabOpen > 3){
             name.setVisibility(View.GONE);
             password.setVisibility(View.GONE);
             adminregisterBtn.setVisibility(View.GONE);
 
             groupV.setVisibility(View.VISIBLE);
+            buddylogoView.setVisibility(View.VISIBLE);
         }
         tabOpen = 2;
     }
@@ -356,6 +363,7 @@ public class MainActivity extends AppCompatActivity {
         if (adminRights == true) {
             if (tabOpen == 2) {
                 groupV.setVisibility(View.GONE);
+                buddylogoView.setVisibility(View.GONE);
 
                 editText.setVisibility(View.VISIBLE);
                 sendmessageView.setVisibility(View.VISIBLE);
