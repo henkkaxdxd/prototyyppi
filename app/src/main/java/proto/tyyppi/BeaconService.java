@@ -53,25 +53,25 @@ public class BeaconService extends Application {
                 bmajori = String.valueOf(beaconM.getMajor());
                 // TODO: update the UI here
                 Log.d("pls", "majori: " + bmajori);
-                saveMajor("major", bmajori);
+                saveStoff("major", bmajori);
                 new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+groupID+"/"+locationID);
 
                 showNotification("Sup brah","(logged in)");
 
                 beaconLight = "on";
-                saveMajor("savedBeacon",beaconLight);
+                saveStoff("savedBeacon",beaconLight);
             }
 
             @Override
             public void onExitedRegion(BeaconRegion region) {
-                new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+null);
-                saveMajor("major",null);
+                new BeaconService.JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+null+"/"+null);
+                saveStoff("major",null);
                 Log.d("pls", "poistunut alueelta");
 
                 showNotification("Bye brah","(banned)");
 
                 beaconLight = "off";
-                saveMajor("savedBeacon",beaconLight);
+                saveStoff("savedBeacon",beaconLight);
             }
         });
 
@@ -80,7 +80,6 @@ public class BeaconService extends Application {
             public void onServiceReady() {
                 beaconManager.startMonitoring(allBeaconsRegion);
                 Log.d("pls", "start monitoring ");
-
             }
         });
     }
@@ -103,7 +102,7 @@ public class BeaconService extends Application {
         notificationManager.notify(1, notification);
     }
 
-    public void saveMajor(String name, String addMajor){
+    public void saveStoff(String name, String addMajor){
         // Create object of SharedPreferences.
         SharedPreferences sharedPref= getApplicationContext().getSharedPreferences("mypref", MODE_PRIVATE);
         //now get Editor

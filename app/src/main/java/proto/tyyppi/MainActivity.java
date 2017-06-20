@@ -8,7 +8,6 @@ package proto.tyyppi;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
         import android.text.Editable;
-        import android.text.TextUtils;
         import android.text.TextWatcher;
         import android.util.Log;
         import android.view.View;
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     int pass = 22;
     int triedpassint = 0;
 
-    Button registerBtn, testBtn, adminBtn, adminregisterBtn;
+    Button registerBtn, adminBtn, adminregisterBtn;
 
     Boolean rightGroup = false, adminRights = false;
 
@@ -102,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
 
         registerBtn = (Button) findViewById(R.id.register);
         registerBtn.setBackgroundColor(Color.parseColor("#ff8200"));
-        testBtn = (Button) findViewById(R.id.button);
-        testBtn.setBackgroundColor(Color.parseColor("#ff8200"));
         adminBtn = (Button) findViewById(R.id.admin);
         adminBtn.setBackgroundColor(Color.parseColor("#ff8200"));
         adminregisterBtn = (Button) findViewById(R.id.adminregister);
@@ -144,7 +141,11 @@ public class MainActivity extends AppCompatActivity {
                 prefEditor.putInt("userChoiceSpinner",usersChoice);
                 prefEditor.commit();
 
-                saveGroup("savedLocation", locationID);
+                saveStuff("savedLocation", locationID);
+
+                if (!autoComp.getText().toString().isEmpty()){
+                    registerBtn.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -197,7 +198,6 @@ public class MainActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
 
                 registerBtn.setVisibility(View.GONE);
-                testBtn.setVisibility(View.GONE);
 
                 rightGroup = false;
 
@@ -332,7 +332,6 @@ public class MainActivity extends AppCompatActivity {
             autoComp.setVisibility(View.GONE);
             locationSpinner.setVisibility(View.GONE);
 
-            testBtn.setVisibility(View.GONE);
             registerBtn.setVisibility(View.GONE);
             adminBtn.setVisibility(View.GONE);
 
@@ -365,7 +364,6 @@ public class MainActivity extends AppCompatActivity {
                 autoComp.setVisibility(View.GONE);
                 locationSpinner.setVisibility(View.GONE);
 
-                testBtn.setVisibility(View.GONE);
                 registerBtn.setVisibility(View.GONE);
                 adminBtn.setVisibility(View.GONE);
 
@@ -393,6 +391,7 @@ public class MainActivity extends AppCompatActivity {
             autoComp.setVisibility(View.GONE);
             locationSpinner.setVisibility(View.GONE);
             adminBtn.setVisibility(View.GONE);
+            registerBtn.setVisibility(View.GONE);
 
             name.setVisibility(View.VISIBLE);
             password.setVisibility(View.VISIBLE);
@@ -418,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
             adminName = name.getText().toString();
             triedpass = password.getText().toString();
             if (android.text.TextUtils.isDigitsOnly(triedpass) == true){    // testaa että salasanassa on vain numeroita
-                triedpassint = Integer.valueOf(triedpass);                  //
+                triedpassint = Integer.valueOf(triedpass);
                 if (triedpassint == pass) {
                     Toast.makeText(MainActivity.this, "Oikea salasana! Admin oikeudet annettu.", Toast.LENGTH_SHORT).show();
                     writemessageView.setAlpha(255);
@@ -446,20 +445,26 @@ public class MainActivity extends AppCompatActivity {
         bmajori = sharedPref.getString("major", bmajori);
         message = editText.getText().toString();
         message = message.replaceAll(" ", "-");
+        message = message.replaceAll("/", " tai ");
         adminName = adminName.replaceAll(" ", "-");
 
         if (message.isEmpty()){
-            Toast.makeText(MainActivity.this, "Viesti kenttäsi on tyhjä!", Toast.LENGTH_SHORT).show(); // "Viesti lähetetty."
+            Toast.makeText(MainActivity.this, "Viesti kenttäsi on tyhjä!", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(MainActivity.this, sendtogroupID +" "+ message +" "+ adminName, Toast.LENGTH_LONG).show(); // "Viesti lähetetty."
-            //new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+bmajori+"/"+groupID+"/"+locationID+"/"+message);
-            //new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+groupID+"/"+adminName+"/"+message);
+            new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+groupID+"/"+message); //lisää tähän lähettäjän nimi (adminName)?
             editText.setText("");
         }
     }
 
-    public void click(View v) {
-        new JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+groupID+"/"+locationID);
+    public void refresh(){
+        // Eli jos olet beaconin alueella ja vaihdat asetuksia, näytölle päivitetään tiedot sinun uusien asetuksien mukaan tämän avulla.
+        SharedPreferences sharedPref = getSharedPreferences("mypref",MODE_PRIVATE);
+        beaconLight = sharedPref.getString("savedBeacon", beaconLight);
+
+        if (beaconLight.equals("on")){
+            new JSONtask().execute("https://oven-sausage.herokuapp.com/add/1/"+bmajori+"/"+groupID+"/"+locationID);
+        }
     }
 
     public void registerClick(View v){
@@ -467,8 +472,12 @@ public class MainActivity extends AppCompatActivity {
         groupID = GroupString;                          // Asetetaan se
         groupV.setText("Olet ryhmässä: " + groupID + "\nHavaintoasemana: " + locationID + "\n\nVoit vaihtaa näitä asetuksista.");    // Tulostetaan se
 
-        testBtn.setVisibility(View.VISIBLE);
-        saveGroup("savedGroup", groupID);
+        Toast.makeText(MainActivity.this, "Uudet tiedot asetettu.", Toast.LENGTH_SHORT).show();
+
+        registerBtn.setVisibility(View.GONE);
+
+        saveStuff("savedGroup", groupID);
+        refresh();
     }
 
     public class JSONtask extends AsyncTask<String, String, String> {
@@ -523,7 +532,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void saveGroup(String name, String addGroup){
+    public void saveStuff(String name, String addGroup){
         // Create object of SharedPreferences.
         SharedPreferences sharedPref= getApplicationContext().getSharedPreferences("mypref", MODE_PRIVATE);
         //now get Editor
