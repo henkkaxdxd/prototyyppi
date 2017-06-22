@@ -10,9 +10,11 @@ package proto.tyyppi;
         import android.text.Editable;
         import android.text.TextWatcher;
         import android.util.Log;
+        import android.view.MotionEvent;
         import android.view.View;
         import android.view.Window;
         import android.view.WindowManager;
+        import android.view.inputmethod.InputMethodManager;
         import android.widget.AdapterView;
         import android.widget.ArrayAdapter;
         import android.widget.AutoCompleteTextView;
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     String GroupString, LocationString, triedpass, adminName, sendtoGroupString, sendtogroupID;
     String message = "";
     String beaconLight = "off";
+
     int pass = 22;
     int triedpassint = 0;
 
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
     Boolean rightGroup = false, adminRights = false;
 
-    int tabOpen = 2; // 1 = writeMessage, 2 = Home, 3 = Settings.
+    int tabOpen = 2; // 1 = writeMessage, 2 = Home, 3 = Settings, 4 = Admin login, 5 = Admin login.
 
     private CountDownTimer timer;
 
@@ -121,6 +124,15 @@ public class MainActivity extends AppCompatActivity {
         } else {
             groupV.setText("Olet ryhmässä: " + groupID + "\nHavaintoasemana: " + locationID + "\n\nVoit vaihtaa näitä asetuksista.");
         }
+
+        findViewById(R.id.cLayout).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                return true;
+            }
+        });
 
         // vv Spinner Location valintaan.
         locationSpinner = (Spinner) findViewById(R.id.locationSpinnerView);
@@ -459,8 +471,8 @@ public class MainActivity extends AppCompatActivity {
         if (message.isEmpty()){
             Toast.makeText(MainActivity.this, "Viesti kenttäsi on tyhjä!", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(MainActivity.this, sendtogroupID +" "+ message +" "+ adminName, Toast.LENGTH_LONG).show(); // "Viesti lähetetty."
-            new JSONtask().execute("https://oven-sausage.herokuapp.com/add/2/"+groupID+"/"+message); //lisää tähän lähettäjän nimi (adminName)?
+            Toast.makeText(MainActivity.this, sendtogroupID+"/"+message+"/"+adminName, Toast.LENGTH_LONG).show(); // "Viesti lähetetty."
+            new JSONtask().execute("https://oven-sausage.herokuapp.com/viesti/"+sendtogroupID+"/"+message+"/"+adminName); //lisää tähän lähettäjän nimi (adminName)?
             editText.setText("");
         }
     }
@@ -475,6 +487,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* ------------ TESTAA TÄMÄ ------------- */
+    /*
+    public static void hideKeyboard(MainActivity activity) {
+        if (activity != null) {
+            if (activity.getCurrentFocus() != null) {
+                InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(MainActivity
+                        .INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus()
+                        .getWindowToken(), 0);
+            }
+        }
+    }
+    */
+
     public void registerClick(View v){
         GroupString = autoComp.getText().toString();    // Otetaan listasta nimi
         groupID = GroupString;                          // Asetetaan se
@@ -486,6 +512,13 @@ public class MainActivity extends AppCompatActivity {
 
         saveStuff("savedGroup", groupID);
         refresh();
+    }
+
+    public void beaconClick(View v){
+        SharedPreferences sharedPref = getSharedPreferences("mypref",MODE_PRIVATE);
+        bmajori = sharedPref.getString("major", bmajori);
+
+        Toast.makeText(MainActivity.this, bmajori, Toast.LENGTH_SHORT).show();
     }
 
     public class JSONtask extends AsyncTask<String, String, String> {
